@@ -755,8 +755,7 @@ def _display_menu(
     console.print(
         "  [bold]↑ ↓[/bold] navigate   "
         "[bold]Enter[/bold] select   "
-        "or press a shortcut key   "
-        "[dim]· section names are labels, not shortcuts[/dim]"
+        "[dim]or press a key · section headers are labels only[/dim]"
     )
     if status:
         console.print(f"  [yellow]{status}[/yellow]")
