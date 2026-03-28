@@ -215,7 +215,7 @@ def test_error_rate_none():
 
 def test_error_rate_empty():
     check, stats = check_error_rate({})
-    assert check.status == HealthStatus.OK
+    assert check.status == HealthStatus.UNKNOWN
     assert stats.total_jobs == 0
 
 

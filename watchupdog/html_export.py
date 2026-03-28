@@ -106,12 +106,11 @@ def _system_cards(report: "FullHealthReport") -> str:
         used  = dev.vram_total - dev.vram_free
         total = dev.vram_total
         pct   = (used / total * 100) if total else 0
-        label = f"VRAM — {dev.name}" if len(gpu_devices) > 1 else "VRAM"
         cards += (
             f'<div class="stat-card">'
-            f'<div class="label">{_esc(label)}</div>'
+            f'<div class="label">VRAM</div>'
             f'<div class="value">{_gb(used)} / {_gb(total)} GB</div>'
-            f'<div class="dim">{pct:.0f}% used</div>'
+            f'<div class="dim">{pct:.0f}% used &nbsp;·&nbsp; {_esc(dev.name)}</div>'
             f"</div>"
         )
 
@@ -145,6 +144,15 @@ def _system_cards(report: "FullHealthReport") -> str:
             f'<div class="stat-card">'
             f'<div class="label">CPU</div>'
             f'<div class="value">{s.cpu_utilization:.0f}%</div>'
+            f"</div>"
+        )
+
+    # Python
+    if getattr(s, "python_version", None):
+        cards += (
+            f'<div class="stat-card">'
+            f'<div class="label">Python</div>'
+            f'<div class="value">{_esc(s.python_version)}</div>'
             f"</div>"
         )
 

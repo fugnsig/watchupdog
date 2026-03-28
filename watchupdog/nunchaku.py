@@ -106,6 +106,22 @@ def _detect_fb_cache(object_info: dict[str, Any]) -> bool:
     return False
 
 
+def get_precision_from_system_stats(system_stats: dict[str, Any] | None) -> str | None:
+    """Search system_stats device names for SVDQ model filenames to infer precision."""
+    if not system_stats:
+        return None
+    for device in system_stats.get("devices", []):
+        name = (
+            device.get("name", "") if isinstance(device, dict)
+            else getattr(device, "name", "")
+        )
+        if isinstance(name, str):
+            m = _SVDQ_RE.search(name)
+            if m:
+                return m.group(1).upper()
+    return None
+
+
 def check_nunchaku_vram_anomaly(
     nunchaku: NunchakuInfo,
     vram_used_bytes: int,

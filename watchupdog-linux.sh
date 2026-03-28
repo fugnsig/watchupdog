@@ -46,10 +46,22 @@ _try_python() {
     return 1
 }
 
+# Active virtual environment or conda env — use it immediately
+if [ -n "$VIRTUAL_ENV" ] && [ -f "$VIRTUAL_ENV/bin/python3" ]; then
+    PYTHON="$VIRTUAL_ENV/bin/python3"
+elif [ -n "$CONDA_PREFIX" ] && [ -f "$CONDA_PREFIX/bin/python3" ]; then
+    PYTHON="$CONDA_PREFIX/bin/python3"
+elif [ -n "$CONDA_EXE" ]; then
+    _CONDA_BASE="$(dirname "$(dirname "$CONDA_EXE")")"
+    [ -f "$_CONDA_BASE/bin/python3" ] && PYTHON="$_CONDA_BASE/bin/python3"
+fi
+
 # PATH candidates — try newest first
+if [ -z "$PYTHON" ]; then
 for candidate in python3.16 python3.15 python3.14 python3.13 python3.12 python3.11 python3.10 python3.9 python3 python py; do
     _try_python "$candidate" && break
 done
+fi
 
 # Conda / Mamba / Miniforge (common Linux locations)
 if [ -z "$PYTHON" ]; then
@@ -93,14 +105,24 @@ if [ "$_PYBITS" = "32" ]; then
     echo ""
 fi
 
-# ── 2. Core deps ─────────────────────────────────────────────
+# ── 2. pip available? ────────────────────────────────────────
+"$PYTHON" -m pip --version &>/dev/null || {
+    echo "[INFO] pip not found — running ensurepip..."
+    "$PYTHON" -m ensurepip --upgrade 2>/dev/null || {
+        echo "[FAIL] pip unavailable. Install with: sudo apt install python3-pip"
+        read -rp "Press Enter to exit..."
+        exit 1
+    }
+}
+
+# ── 3. Core deps ─────────────────────────────────────────────
 "$PYTHON" -c "import rich, click, httpx, pydantic" 2>/dev/null || {
     echo "[INFO] Installing core packages..."
     "$PYTHON" -m pip install rich click "httpx>=0.27" "pydantic>=2.0" psutil tomli --quiet 2>/dev/null \
     || "$PYTHON" -m pip install rich click "httpx>=0.27" "pydantic>=2.0" psutil tomli --user --quiet 2>/dev/null
 }
 
-# ── 3. Install watchupdog ─────────────────────────────────
+# ── 4. Install watchupdog ─────────────────────────────────
 "$PYTHON" -c "import watchupdog" 2>/dev/null || {
     echo "[INFO] Installing watchupdog..."
     "$PYTHON" -m pip install -e "$MONITOR_DIR" --quiet 2>/dev/null \
@@ -112,7 +134,7 @@ fi
     exit 1
 }
 
-# ── 4. Find ComfyUI ───────────────────────────────────────────
+# ── 5. Find ComfyUI ───────────────────────────────────────────
 COMFYUI_PATH=$("$PYTHON" "$MONITOR_DIR/find_comfyui.py" 2>/dev/tty || true)
 if [ -z "$COMFYUI_PATH" ]; then
     echo ""
@@ -125,7 +147,7 @@ if [ -z "$COMFYUI_PATH" ]; then
     [ -n "$_PORTINPUT" ] && COMFYUI_URL="http://127.0.0.1:$_PORTINPUT"
 fi
 
-# ── 5. Read URL from config ───────────────────────────────────
+# ── 6. Read URL from config ───────────────────────────────────
 TOML="$MONITOR_DIR/watchupdog.toml"
 if [ -f "$TOML" ]; then
     _CFG_URL=$("$PYTHON" -c "
@@ -139,8 +161,17 @@ print(m.group(1) if m else '')
 fi
 
 # ── Launch interactive menu ───────────────────────────────────
-"$PYTHON" -m watchupdog.interactive_menu \
-    --url "$COMFYUI_URL" \
-    --monitor-dir "$MONITOR_DIR" \
-    --comfyui-path "$COMFYUI_PATH" \
-    --launcher "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
+_LAUNCHER="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/$(basename "${BASH_SOURCE[0]}")"
+while true; do
+    "$PYTHON" -m watchupdog.interactive_menu \
+        --url "$COMFYUI_URL" \
+        --monitor-dir "$MONITOR_DIR" \
+        --comfyui-path "$COMFYUI_PATH" \
+        --launcher "$_LAUNCHER"
+    echo ""
+    read -rp "  R = Relaunch   X = Exit: " _choice
+    case "${_choice,,}" in
+        r) continue ;;
+        *) break ;;
+    esac
+done

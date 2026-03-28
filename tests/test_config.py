@@ -62,9 +62,7 @@ def test_invalid_toml_falls_back(tmp_path, monkeypatch):
     assert cfg.url == DEFAULT_CONFIG["url"]
 
 
-def test_expected_models_present():
+def test_expected_models_default_empty():
+    # expected_models is intentionally empty by default — users populate it in watchupdog.toml
     cfg = load_config()
-    assert "flux" in cfg.expected_models
-    assert "clip" in cfg.expected_models
-    assert "t5" in cfg.expected_models
-    assert "vae" in cfg.expected_models
+    assert isinstance(cfg.expected_models, dict)

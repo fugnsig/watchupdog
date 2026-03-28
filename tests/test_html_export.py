@@ -33,19 +33,26 @@ def _make_report(
 def _make_system_stats(vram_used_mb: int = 4096, vram_total_mb: int = 24576) -> types.SimpleNamespace:
     """
     Build a minimal system_stats object matching the fields accessed by html_export:
-      s.devices — list with .vram_used_mb, .vram_total_mb, .name
-      s.ram_used_mb, s.ram_total_mb
+      s.devices — list with .vram_total, .vram_free, .name, .type (all bytes)
+      s.ram_used, s.ram_total (bytes)
       s.python_version
     """
+    MB = 1024 * 1024
+    vram_total_b = vram_total_mb * MB
+    vram_free_b  = (vram_total_mb - vram_used_mb) * MB
     device = types.SimpleNamespace(
         name="NVIDIA GeForce RTX 4090",
-        vram_used_mb=vram_used_mb,
-        vram_total_mb=vram_total_mb,
+        type="cuda",
+        vram_total=vram_total_b,
+        vram_free=vram_free_b,
     )
     return types.SimpleNamespace(
         devices=[device],
-        ram_used_mb=8192,
-        ram_total_mb=32768,
+        ram_used=8192 * MB,
+        ram_total=32768 * MB,
+        disk_total_bytes=0,
+        disk_free_bytes=0,
+        cpu_utilization=None,
         python_version="3.11.9",
     )
 

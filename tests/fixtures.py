@@ -84,7 +84,13 @@ SAMPLE_HISTORY_WITH_ERRORS = {
     "prompt-err-002": {
         "status": {
             "messages": [
-                ["execution_interrupted", {"timestamp": 1_700_000_300.0}]
+                [
+                    "execution_error",
+                    {
+                        "exception_message": "RuntimeError: out of memory",
+                        "timestamp": 1_700_000_300.0,
+                    },
+                ]
             ]
         },
         "outputs": {},
