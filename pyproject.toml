@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "watchupdog"
+version = "0.2.0"
+description = "A full-stack health watchdog for ComfyUI instances."
+requires-python = ">=3.10"
+readme = "README.md"
+license = { text = "MIT" }
+
+dependencies = [
+    "httpx>=0.27",
+    "rich>=13.0",
+    "pydantic>=2.0",
+    "click>=8.1",
+    "psutil>=5.9",
+    "tomli>=2.0; python_version < '3.11'",
+]
+
+[project.optional-dependencies]
+gpu = ["pynvml>=11.0"]
+server = ["fastapi>=0.110", "uvicorn>=0.29"]
+ws = ["websockets>=12.0"]
+all = ["pynvml>=11.0", "fastapi>=0.110", "uvicorn>=0.29", "websockets>=12.0", "aiohttp>=3.9"]
+
+[project.scripts]
+watchupdog = "watchupdog.cli:main"
+watchupdog-server = "watchupdog.dashboard_server:serve"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["watchupdog*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

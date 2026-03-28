@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# watchupdog runtime files — contain user-specific paths and local state
+url_cache.json
+url_cache.tmp
+backups/
+*.tmp
+
+# Offline installer — downloaded wheels are not committed (use download_packages.py)
+# .gitkeep is kept so git tracks the empty directory
+offline/packages/*.whl
+offline/packages/*.tar.gz
+
+# User config — copy watchupdog.example.toml and rename locally
+watchupdog.toml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,7 @@
+description = "Minimal + Nunchaku nodes for quantised FLUX.1 inference."
+extends     = "minimal"
+
+[[repos]]
+name = "ComfyUI-nunchaku"
+url  = "https://github.com/mit-han-lab/ComfyUI-nunchaku"
+path = "custom_nodes/ComfyUI-nunchaku"

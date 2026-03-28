@@ -1,0 +1,37 @@
+# watchupdog configuration — copy this file to watchupdog.toml and edit.
+#
+# Load order: --config flag → ./watchupdog.toml → ~/.config/watchupdog/watchupdog.toml
+# All keys are optional; omitted keys use the defaults shown here.
+
+# ComfyUI URL. Auto-detected from running processes if omitted.
+url = "http://127.0.0.1:8188"
+
+# Watch mode refresh interval (seconds)
+interval = 5
+
+# HTTP request timeout (seconds)
+timeout = 5
+
+# Maximum number of pip-state snapshots to keep in backups/
+max_backups = 10
+
+[thresholds]
+vram_warn_pct     = 90    # % VRAM used → WARN
+vram_critical_pct = 97    # % VRAM used → CRITICAL
+ram_warn_pct      = 85    # % RAM used  → WARN
+queue_warn        = 10    # pending jobs → WARN
+stale_job_minutes = 5     # minutes a job runs before flagged stale
+history_jobs      = 50    # how many history entries to analyse for error rate
+
+# [webhooks]
+# discord_url          = "https://discord.com/api/webhooks/YOUR_ID/YOUR_TOKEN"
+# ntfy_url             = "https://ntfy.sh/your-topic"
+# on_warn              = false   # set true to also notify on WARN (default: CRITICAL only)
+# min_interval_seconds = 300     # minimum seconds between repeat notifications
+
+# [expected_models]
+# Enforce that specific model files are present. Watchupdog will WARN if any
+# listed file is missing from ComfyUI's model inventory.
+# Example:
+# flux = ["flux1-dev.safetensors", "flux1-schnell.safetensors"]
+# checkpoints = ["v1-5-pruned-emaonly.safetensors"]

@@ -1,0 +1,11 @@
+description = "ComfyUI + Manager. Recommended starting point for most users."
+
+[[repos]]
+name = "ComfyUI"
+url  = "https://github.com/comfyanonymous/ComfyUI"
+path = "."
+
+[[repos]]
+name = "ComfyUI-Manager"
+url  = "https://github.com/ltdrdata/ComfyUI-Manager"
+path = "custom_nodes/ComfyUI-Manager"
